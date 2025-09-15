@@ -9,12 +9,50 @@ df = pd.DataFrame({
     "age": [21, 12, 36, 98, 45, 63],
     "ethnicity": ["caucasian", "latino", "latino", "latino", "caucasian", "caucasian"],
     "convictions": [0,1,2,3,4,5],
-    "encounters": [12,2,0,0,45,5]
+    "encounters": [12,2,0,0,45,5],
+    "gender" : ["m", "f","m", "f","m", "f"]
 })
 
-st.write(df)
+def calculate_recidive_score(**kwargs):
+    score = 0
+    
+    nbr_encounter_police = kwargs.get("nbr_encounter_police")
+    nbr_prior_convictions = kwargs.get("nbr_prior_convictions")
+    age = kwargs.get("age")
+    gender = kwargs.get("gender")       # not used yet
+    ethnicity = kwargs.get("ethnicity") # not used yet
 
-st.title("Discimination through data and algorithm")
+    # Encounters with police
+    if nbr_encounter_police is not None:
+        if nbr_encounter_police == 0:
+            pass
+        elif 0 < nbr_encounter_police < 10:
+            score += 1
+        elif nbr_encounter_police >= 10:
+            score += 2
+
+    # Prior convictions
+    if nbr_prior_convictions is not None:
+        if nbr_prior_convictions == 1:
+            pass
+        elif 1 < nbr_prior_convictions < 5:
+            score += 1
+        elif nbr_prior_convictions >= 5:
+            score += 2
+
+    # Age
+    if age is not None and age < 25:
+        score *= 2.5
+
+    return score
+
+df['recidive_score'] = [calculate_recidive_score(gender=gender, ethnicity=ethnicity, nbr_encounter_police=nbr_encounter_police, nbr_prior_convictions=nbr_prior_convictions, age=age) for gender, ethnicity, nbr_encounter_police, nbr_prior_convictions, age in zip(df['gender'],
+        df['ethnicity'],
+        df['encounters'],
+        df['convictions'],
+        df['age'])]
+
+st.title("Discrimination through data and algorithm")
 
 container = st.container(border=True)
 
@@ -50,5 +88,18 @@ for col in row1 + row2:
         col2.write(f"Ethnicity: {df['ethnicity'][i]}")
         col2.write(f"Number of convictions: {df['convictions'][i]}")
         col2.write(f"Number of encounters with the police: {df['encounters'][i]}")
-        st.info("test")
+        if df['recidive_score'][i] < 33:
+            st.info(f"Recidive score : {df['recidive_score'][i]}%")
+        elif 33< df['recidive_score'][i] < 66:
+            st.warning(f"Recidive score : {df['recidive_score'][i]}%")
+        elif df['recidive_score'][i] > 66:
+            st.error(f"Recidive score : {df['recidive_score'][i]}%")
+
         i += 1
+
+
+
+
+    
+
+    
