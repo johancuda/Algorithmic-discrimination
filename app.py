@@ -7,10 +7,10 @@ st.set_page_config(page_title="Discrimination through data and algorithm", layou
 df = pd.DataFrame({
     "name": ["john", "jack", "joe", "janine", "janet", "jocelyn"],
     "age": [21, 12, 36, 98, 45, 63],
-    "ethnicity": ["caucasian", "latino", "latino", "latino", "caucasian", "caucasian"],
+    "ethnicity": ["Swiss", "Other", "Swiss", "Other", "Other", "Other"],
     "convictions": [0, 1, 2, 3, 4, 5],
     "encounters": [12, 2, 0, 0, 45, 5],
-    "gender": ["m", "f", "m", "f", "m", "f"],
+    "gender": ["M", "F", "N/S", "N/S", "M", "F"],
 })
 
 # ---------- Scoring logic (same as yours, kept simple) ----------
@@ -34,6 +34,12 @@ def calculate_recidive_score(*, nbr_encounter_police=None, nbr_prior_convictions
             score += 1
         elif nbr_prior_convictions >= 5:
             score += 2
+    if gender is not None and gender == "M":
+        score +=1
+    if ethnicity is not None and ethnicity == "Other":
+        if score == 0:
+            score = 1
+        score *= 1.2
 
     # Age multiplier
     if age is not None and age < 25:
@@ -43,15 +49,20 @@ def calculate_recidive_score(*, nbr_encounter_police=None, nbr_prior_convictions
 
     return float(score)
 
-def max_possible_score_for_row(row, use_encounters, use_convictions, use_age):
+def max_possible_score_for_row(row, use_encounters, use_convictions, use_age, use_ethnicity, use_gender):
     # Worst-case inputs for enabled features, keeping the person's actual age for the age rule
     worst_encounters = 2 if use_encounters else 0
     worst_convictions = 2 if use_convictions else 0
-    base = worst_encounters + worst_convictions
+    worst_gender = 1 if use_gender else 0
+    base = worst_encounters + worst_convictions + worst_gender
     if use_age and row["age"] < 25:
         if base == 0:
             base = 1
         base *= 2.5
+    if use_ethnicity and row['ethnicity'] == "Other":
+        if base == 0:
+            base = 1
+        base *= 1.2
     return float(base)
 
 # ---------- UI ----------
@@ -64,6 +75,49 @@ container.write(
     " This experience is based on various studies around risk assessment systems in the world and gathers identified biases."
 )
 
+st.divider()
+
+st.subheader("Facts")
+
+# sample cards data
+facts = [
+    {"title": "Recidivism score", "text": "The score shown in the profiles underneath mimics the categorization produced by [FaST](https://www.rosnet.ch/fr-ch/Processus/Tri). It represents three categories, from low chances of recidivism (in blue) to high chances (in red)."},
+    {"title": "The Black Box aspect", "text": "This app mirors the \"Black Box\" aspect that these automated rating systems tend to have. The users (and the inmates being put to evaluations) don't necessarily understand what's going on in the rating process. This problem is notably visible in the FORTES algorithm used by many Swiss Cantons, as shown by [AlgorithmWatch](https://algorithmwatch.ch/de/fotres-automatisierte-strafjustiz/) and Tim Räz in [it's study of FORTES](https://link.springer.com/article/10.1007/s43681-022-00223-y)."},
+    {"title": "Information weight", "text": "All informations don't play the same role in recidivism score calculations. As you can see in the following example, certains variables (e.g. \"Age\") tend to play a great role in the recidivism score."},
+    {"title": "Lack of Information", "text": "Missing informations about people doesn't necessarily mean less discrimination. For instance, even though ethnicity or race aren't taken into account when scoring people for recidivism in Swiss systems (such ash [FaST](https://www.rosnet.ch/fr-ch/Processus/Tri) and [FORTES](https://www.mwv-berlin.de/produkte/!/title/fotres--forensisches-operationalisiertes-therapie-risiko-evaluations-system/id/804)), discrimination can still be present through data and practices. Racial profiling is a great example of hidden discrimination hidden in arrest numbers or encounter with the police for a single individual."},
+    {"title": "une carte sur les pratiques en suisse", "text": "FORTES, FaST, manque évaluation et données"},
+    {"title": "Chances of recidivism", "text": "There is a misconception about what the chance of recidivism means. For example, when we say that someone has a 43 percent chance of recidivism, it doesn't mean that they will commit another crime 43 percent of the time. It means that from similar profile, 43 percent of the people have commited an other crime."}
+]
+
+# init index
+if "idx" not in st.session_state:
+    st.session_state.idx = 0
+
+def prev_card():
+    st.session_state.idx = max(0, st.session_state.idx - 1)
+
+def next_card():
+    if st.session_state.idx == len(facts)-1:
+        st.session_state.idx = 0
+    else:
+        st.session_state.idx = min(len(facts) - 1, st.session_state.idx + 1)
+
+# layout: card area and controls
+col11, col22, col33 = st.columns([1, 6, 1])
+with col11:
+    st.button("← Prev", on_click=prev_card)
+with col33:
+    st.button("Next →", on_click=next_card)
+
+card = facts[st.session_state.idx]
+with col22:
+    with st.container(border=True):
+        st.markdown(f"### {card['title']}")
+        st.write(card["text"])
+        st.caption(f"{st.session_state.idx + 1} / {len(facts)}")
+
+st.divider()
+
 col1, col2 = st.columns([0.3,0.7])
 
 with col1:
@@ -71,13 +125,19 @@ with col1:
     st.write("Select what information you want to use in your system:")
 
     use_gender = st.toggle("Gender", key="use_gender")
+    if use_gender:
+        st.info("According to the [Swiss Federal Institute of Statistics](https://www.bfs.admin.ch/bfs/fr/home/statistiques/criminalite-droit-penal/recidive/analyses.html), men tend to have a higher recidive rate than women. We don't have any data about other genders")
     use_ethnicity = st.toggle("Ethnicity", key="use_ethnicity")
+    if use_ethnicity:
+        st.info("According to [this analysis](https://www.bfs.admin.ch/bfs/fr/home/statistiques/criminalite-droit-penal/recidive/analyses.html) by the Swiss Federal Institute of Statistics, non-Swiss people tend to recidivate more.")
     use_encounters = st.toggle("Number of encounters with the police", key="use_encounters")
 
     if use_encounters:
-        st.info("Because of racial profiling, numbers of encounters with the police can cause discrimination.")
+        st.info("Because police controls can be executed on discriminatory grounds, numbers of encounters with the police can cause discrimination through data. Encounters with the police are defined as any interaction with the police, from roadside checks to police interventions.")
 
     use_convictions = st.toggle("Number of previous convictions", key="use_convictions")
+    if use_convictions:
+        st.info("Convictions rate can be influenced by discriminatory decisions, thus influencing the recidivism score.")
     use_age = st.toggle("Age", key="use_age")
 
     if use_age:
@@ -108,7 +168,7 @@ with col2:
         scores.append(score)
 
         # Convert to percent relative to this profile's max possible given current toggles
-        max_score = max_possible_score_for_row(row, use_encounters, use_convictions, use_age)
+        max_score = max_possible_score_for_row(row, use_encounters, use_convictions, use_age, use_ethnicity, use_gender)
         percent = 0.0 if max_score == 0 else (score / max_score) * 100.0
         percents.append(round(percent, 1))
 
