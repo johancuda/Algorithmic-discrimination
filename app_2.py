@@ -5,12 +5,12 @@ st.set_page_config(page_title="Discrimination through data and algorithm", layou
 
 # ---------- Data ----------
 df = pd.DataFrame({
-    "name": ["john", "jack", "joe", "janine", "janet", "jocelyn"],
-    "age": [21, 12, 36, 98, 45, 63],
-    "ethnicity": ["Swiss", "Other", "Swiss", "Other", "Other", "Other"],
-    "convictions": [0, 1, 2, 3, 4, 5],
-    "encounters": [12, 2, 0, 0, 45, 5],
-    "gender": ["M", "F", "N/S", "N/S", "M", "F"],
+    "name": ["john", "jack", "joe", "janine", "janet", "jocelyn", "leo", "lara"],
+    "age": [21, 12, 36, 98, 45, 63, 28, 24],
+    "ethnicity": ["Swiss", "Other", "Swiss", "Other", "Other", "Other", "Swiss", "Other"],
+    "convictions": [0, 1, 2, 3, 4, 5, 0, 9],
+    "encounters": [12, 2, 0, 0, 45, 5, 2, 9],
+    "gender": ["M", "F", "N/S", "N/S", "M", "F", "M", "N/S"],
 })
 
 # ---------- Scoring logic (same as yours, kept simple) ----------
@@ -84,9 +84,8 @@ facts = [
     {"title": "Information weight", "text": "All informations don't play the same role in recidivism score calculations. As you can see in the following example, certain variables (e.g. \"Age\") tend to play a greater role than others in the recidivism score. This comes from the architecture of the algorithm used in the evaluation and is thus induced during the construction and programming of the system."},
     {"title": "Lack of Information", "text": "Missing informations about people doesn't necessarily mean less discrimination. For instance, even though ethnicity or race aren't taken into account when scoring people for recidivism in Swiss systems (such ash [FaST](https://www.rosnet.ch/fr-ch/Processus/Tri) and [FORTES](https://www.mwv-berlin.de/produkte/!/title/fotres--forensisches-operationalisiertes-therapie-risiko-evaluations-system/id/804)), discrimination can still be present through data and practices. Racial profiling is a great example of hidden discrimination hidden in arrest numbers or encounter with the police for a single individual. One could also use ZIP codes to try and infer the ethnicity or origin of a person, using statistics about demographics from certain regions."},
     {"title": "The Swiss situation", "text": "There is no federal consensus on how to evaluate recidivism risks in Switzerland. The two main systems used are FaST and FOTRES, even though [latin cantons do not use them yet](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine). In [an article from 2018](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine), the SRF points out that these systems lack external evaluation and validation to assess their quality"},
-    {"title": "Chances of recidivism", "text": "There is a misconception about what the chance of recidivism means. For example, when we say that someone has a 43 percent chance of recidivism, it doesn't mean that they will commit another crime 43 percent of the time. It means that from similar profiles, 43 percent of the people have commited another crime."},
+    {"title": "Chances of recidivism", "text": "There is a misconception about what the chance of recidivism means. For example, when we say that someone has a 43 percent chance of recidivism, it doesn't mean that they will commit another crime 43 percent of the time. It means that from similar profiles, 43 percent of the people have commited another crime."}
     # Pas sûr de la définition ici!!
-    {"title": "The US system", "text": "COMPAS is an american system widely used in the US. Contrary to the Swiss ones, COMPAS has undergone way more evaluations (see [this study from ProPublica](https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing)). These studies have highlighted how this american tool perpetrates racial discrimination."}
 ]
 
 # init index
@@ -120,13 +119,12 @@ st.divider()
 
 st.subheader("Create your system")
 
+col1, col2 = st.columns(2)
+
 with st.container(border=True):
     "You willl here create your own risk assessment system. You can select the informations you want to use in your system (you can select multiple at once), and you'll see the ratings of the different profiles change accordingly."
 
-col1, col2 = st.columns([0.3,0.7])
-
 with col1:
-
     st.write("Select what information you want to use in your system:")
 
     use_gender = st.toggle("Gender", key="use_gender")
@@ -149,59 +147,71 @@ with col1:
         st.info("According to [this study of the US system **COMPAS**](https://www.propublica.org/article/how-we-analyzed-the-compas-recidivism-algorithm), younger people tend to be categorized as riskier profiles for recidivism.")
 
 
-with col2:
         
-    st.subheader("Profiles")
+st.subheader("Profiles")
 
-    # ---------- Compute scores dynamically on every rerun ----------
-    scores = []
-    percents = []
-    for _, row in df.iterrows():
-        kwargs = {}
-        if use_gender:
-            kwargs["gender"] = row["gender"]
-        if use_ethnicity:
-            kwargs["ethnicity"] = row["ethnicity"]
-        if use_encounters:
-            kwargs["nbr_encounter_police"] = row["encounters"]
-        if use_convictions:
-            kwargs["nbr_prior_convictions"] = row["convictions"]
-        if use_age:
-            kwargs["age"] = row["age"]
+# ---------- Compute scores dynamically on every rerun ----------
+scores = []
+percents = []
+for _, row in df.iterrows():
+    kwargs = {}
+    if use_gender:
+        kwargs["gender"] = row["gender"]
+    if use_ethnicity:
+        kwargs["ethnicity"] = row["ethnicity"]
+    if use_encounters:
+        kwargs["nbr_encounter_police"] = row["encounters"]
+    if use_convictions:
+        kwargs["nbr_prior_convictions"] = row["convictions"]
+    if use_age:
+        kwargs["age"] = row["age"]
 
-        score = calculate_recidive_score(**kwargs)
-        scores.append(score)
+    score = calculate_recidive_score(**kwargs)
+    scores.append(score)
 
-        # Convert to percent relative to this profile's max possible given current toggles
-        max_score = max_possible_score_for_row(row, use_encounters, use_convictions, use_age, use_ethnicity, use_gender)
-        percent = 0.0 if max_score == 0 else (score / max_score) * 100.0
-        percents.append(round(percent, 1))
+    # Convert to percent relative to this profile's max possible given current toggles
+    max_score = max_possible_score_for_row(row, use_encounters, use_convictions, use_age, use_ethnicity, use_gender)
+    percent = 0.0 if max_score == 0 else (score / max_score) * 100.0
+    percents.append(round(percent, 1))
 
-    df_display = df.copy()
-    df_display["recidive_score_percent"] = percents
+df_display = df.copy()
+df_display["recidive_score_percent"] = percents
 
-    # ---------- Show cards ----------
-    row1 = st.columns(3)
-    row2 = st.columns(3)
-    cards = row1 + row2
+# ---------- Show cards ----------
+row1 = st.columns(4)
+row2 = st.columns(4)
+cards = row1 + row2
+nbr_low = 0
+nbr_medium = 0
+nbr_high = 0
 
-    for i, col in enumerate(cards):
-        with col.container(border=True):
-            c1, c2 = st.columns(2)
-            c1.write("**Profile**")
-            # Replace with a real image path if you have one
-            c1.image("pic.jpg")
-            c2.write(f"**Name**: {df_display['name'][i]}")
-            c2.write(f"**Age**: {df_display['age'][i]}")
-            c2.write(f"**Gender**: {df_display['gender'][i]}")
-            c2.write(f"**Ethnicity**: {df_display['ethnicity'][i]}")
-            c2.write(f"**Number of convictions**: {df_display['convictions'][i]}")
-            c2.write(f"**Number of encounters with the police**: {df_display['encounters'][i]}")
+for i, col in enumerate(cards):
+    with col.container(border=True):
+        c1, c2 = st.columns(2)
+        c1.write("**Profile**")
+        # Replace with a real image path if you have one
+        c1.image("pic.jpg")
+        c2.write(f"**Name**: {df_display['name'][i]}")
+        c2.write(f"**Age**: {df_display['age'][i]}")
+        c2.write(f"**Gender**: {df_display['gender'][i]}")
+        c2.write(f"**Ethnicity**: {df_display['ethnicity'][i]}")
+        c2.write(f"**Number of convictions**: {df_display['convictions'][i]}")
+        c2.write(f"**Number of encounters with the police**: {df_display['encounters'][i]}")
 
-            pct = df_display["recidive_score_percent"][i]
-            if pct < 33:
-                st.info(f"Recidive score: {pct}%")
-            elif 33 <= pct < 66:
-                st.warning(f"Recidive score: {pct}%")
-            else:
-                st.error(f"Recidive score: {pct}%")
+        pct = df_display["recidive_score_percent"][i]
+        if pct < 33:
+            st.info(f"Recidive score: {pct}%")
+            nbr_low += 1
+        elif 33 <= pct < 66:
+            nbr_medium += 1
+            st.warning(f"Recidive score: {pct}%")
+        else:
+            nbr_high += 1
+            st.error(f"Recidive score: {pct}%")
+
+
+with col2:
+
+    st.write(f"Number of low risk profiles : {nbr_low}")
+    st.write(f"Number of medium risk profiles : {nbr_medium}")
+    st.write(f"Number of high risk profiles : {nbr_high}")

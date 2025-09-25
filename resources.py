@@ -3,10 +3,13 @@ import streamlit as st
 def about():
     st.title("Resources")
 
-    container = st.container(border=True)
-    container.write(
-        "You can find here various resources about risk assessment systems."
-    )
+    st.subheader("About automatic systems in Switzerland")
+
+    """
+    - [Automating Society Report 2020](https://automatingsociety.algorithmwatch.org/wp-content/uploads/2021/01/Automating-Society-Report-2020-CH-Edition-DE-FR-IT-EN.pdf)
+    - [Die grosse Screening-Maschine](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine)
+    - [Automatisierte Strafjustiz auf wissenschaftlich wackeligen Beinen](https://algorithmwatch.ch/de/fotres-automatisierte-strafjustiz/)
+    """
 
     st.subheader("About FOTRES")
 
@@ -25,7 +28,14 @@ def about():
     - [Compas Analysis on GitHub](https://github.com/propublica/compas-analysis/blob/master/Compas%20Analysis.ipynb)
     """
 
-    
+    st.subheader("About FaST")
 
-pg = st.navigation([st.Page("app.py", title="Home", default=True), st.Page(about, title="Resources")])
+    """
+    - [ROS, Fall-Screening-Tool FaST](https://algorithmwatch.ch/en/atlas-db/ros-fall-screening-tool-fast/?text=FaST)
+    - [Manual – Fall-Screening-Tool](https://www.srf.ch/static/srf-data/data/2018/ros/fast_manual_und_gewichte.pdf)
+    """
+
+st.logo("BFH_Logo_C_en_100_RGB.png", size="large")
+
+pg = st.navigation([st.Page("app.py", title="Home", default=True), st.Page(about, title="Resources"), st.Page("app_2.py", title="test")])
 pg.run()
