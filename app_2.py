@@ -1,7 +1,44 @@
 import streamlit as st
 import pandas as pd
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 st.set_page_config(page_title="Discrimination through data and algorithm", layout="wide")
+
+# Function to authenticate and connect to Google Sheets using Streamlit Secrets
+def authenticate_google_sheets():
+    # Load credentials from Streamlit Secrets
+    secrets = st.secrets["google_sheets"]
+    
+    # Prepare the credentials for authentication
+    credentials = {
+        "type": "service_account",
+        "project_id": secrets["project_id"],
+        "private_key_id": secrets["private_key_id"],
+        "private_key": secrets["private_key"].replace("\\n", "\n"),
+        "client_email": secrets["client_email"],
+        "client_id": secrets["client_id"],
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_x509_cert_url": secrets["client_x509_cert_url"]
+    }
+    
+    # Convert the credentials to a format suitable for gspread
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials, 
+                                                             ["https://www.googleapis.com/auth/spreadsheets", 
+                                                              "https://www.googleapis.com/auth/drive.file"])
+    client = gspread.authorize(creds)
+    return client
+
+# Function to update the Google Sheet with form data
+def update_google_sheet(data):
+    # Use Streamlit Secrets to get the spreadsheet ID
+    spreadsheet_id = st.secrets["google_sheets"]["spreadsheet_id"]
+    
+    # Open the Google Sheet by ID
+    sheet = client.open_by_key(spreadsheet_id).sheet1  # Assuming sheet1 is the target sheet
+    sheet.append_row(data)  # Add the form data as a new row
 
 # ---------- Data ----------
 df = pd.DataFrame({
@@ -75,45 +112,62 @@ container.write(
 
 st.divider()
 
-st.subheader("General informations")
+########################################
 
-# sample cards data
-facts = [
-    {"title": "Recidivism score", "text": "The score shown in the profiles underneath mimics the categorization produced by [FaST](https://www.rosnet.ch/fr-ch/Processus/Tri), a tool used by [most German speaking cantons](https://algorithmwatch.ch/en/atlas-db/ros-fall-screening-tool-fast/?text=FaST). It represents three categories, from low chances of recidivism (in blue) to high chances (in red)."},
-    {"title": "The Black-box aspect", "text": "This app mirors the \"Black-box\" aspect that these automated rating systems tend to have. The users (and the inmates being put to evaluations) don't necessarily understand what's going on in the rating process. This problem is notably visible in the FORTES algorithm used by many Swiss Cantons, as shown by [AlgorithmWatch](https://algorithmwatch.ch/de/fotres-automatisierte-strafjustiz/) and Tim Räz in [it's study of FORTES](https://link.springer.com/article/10.1007/s43681-022-00223-y)."},
-    {"title": "Information weight", "text": "All informations don't play the same role in recidivism score calculations. As you can see in the following example, certain variables (e.g. \"Age\") tend to play a greater role than others in the recidivism score. This comes from the architecture of the algorithm used in the evaluation and is thus induced during the construction and programming of the system."},
-    {"title": "Lack of Information", "text": "Missing informations about people doesn't necessarily mean less discrimination. For instance, even though ethnicity or race aren't taken into account when scoring people for recidivism in Swiss systems (such ash [FaST](https://www.rosnet.ch/fr-ch/Processus/Tri) and [FORTES](https://www.mwv-berlin.de/produkte/!/title/fotres--forensisches-operationalisiertes-therapie-risiko-evaluations-system/id/804)), discrimination can still be present through data and practices. Racial profiling is a great example of hidden discrimination hidden in arrest numbers or encounter with the police for a single individual. One could also use ZIP codes to try and infer the ethnicity or origin of a person, using statistics about demographics from certain regions."},
-    {"title": "The Swiss situation", "text": "There is no federal consensus on how to evaluate recidivism risks in Switzerland. The two main systems used are FaST and FOTRES, even though [latin cantons do not use them yet](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine). In [an article from 2018](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine), the SRF points out that these systems lack external evaluation and validation to assess their quality"},
-    {"title": "Chances of recidivism", "text": "There is a misconception about what the chance of recidivism means. For example, when we say that someone has a 43 percent chance of recidivism, it doesn't mean that they will commit another crime 43 percent of the time. It means that from similar profiles, 43 percent of the people have commited another crime."}
-    # Pas sûr de la définition ici!!
-]
+# st.subheader("General informations")
 
-# init index
-if "idx" not in st.session_state:
-    st.session_state.idx = 0
+# # sample cards data
+# facts = [
+#     {"title": "Recidivism score", "text": "The score shown in the profiles underneath mimics the categorization produced by [FaST](https://www.rosnet.ch/fr-ch/Processus/Tri), a tool used by [most German speaking cantons](https://algorithmwatch.ch/en/atlas-db/ros-fall-screening-tool-fast/?text=FaST). It represents three categories, from low chances of recidivism (in blue) to high chances (in red)."},
+#     {"title": "The Black-box aspect", "text": "This app mirors the \"Black-box\" aspect that these automated rating systems tend to have. The users (and the inmates being put to evaluations) don't necessarily understand what's going on in the rating process. This problem is notably visible in the FORTES algorithm used by many Swiss Cantons, as shown by [AlgorithmWatch](https://algorithmwatch.ch/de/fotres-automatisierte-strafjustiz/) and Tim Räz in [it's study of FORTES](https://link.springer.com/article/10.1007/s43681-022-00223-y)."},
+#     {"title": "Information weight", "text": "All informations don't play the same role in recidivism score calculations. As you can see in the following example, certain variables (e.g. \"Age\") tend to play a greater role than others in the recidivism score. This comes from the architecture of the algorithm used in the evaluation and is thus induced during the construction and programming of the system."},
+#     {"title": "Lack of Information", "text": "Missing informations about people doesn't necessarily mean less discrimination. For instance, even though ethnicity or race aren't taken into account when scoring people for recidivism in Swiss systems (such ash [FaST](https://www.rosnet.ch/fr-ch/Processus/Tri) and [FORTES](https://www.mwv-berlin.de/produkte/!/title/fotres--forensisches-operationalisiertes-therapie-risiko-evaluations-system/id/804)), discrimination can still be present through data and practices. Racial profiling is a great example of hidden discrimination hidden in arrest numbers or encounter with the police for a single individual. One could also use ZIP codes to try and infer the ethnicity or origin of a person, using statistics about demographics from certain regions."},
+#     {"title": "The Swiss situation", "text": "There is no federal consensus on how to evaluate recidivism risks in Switzerland. The two main systems used are FaST and FOTRES, even though [latin cantons do not use them yet](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine). In [an article from 2018](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine), the SRF points out that these systems lack external evaluation and validation to assess their quality."},
+#     {"title": "Chances of recidivism", "text": "There is a misconception about what the chance of recidivism means. For example, when we say that someone has a 43 percent chance of recidivism, it doesn't mean that they will commit another crime 43 percent of the time. It means that from similar profiles, 43 percent of the people have commited another crime."}
+#     # Pas sûr de la définition ici!!
+# ]
 
-def prev_card():
-    st.session_state.idx = max(0, st.session_state.idx - 1)
+# # init index
+# if "idx" not in st.session_state:
+#     st.session_state.idx = 0
 
-def next_card():
-    if st.session_state.idx == len(facts)-1:
-        st.session_state.idx = 0
-    else:
-        st.session_state.idx = min(len(facts) - 1, st.session_state.idx + 1)
+# def prev_card():
+#     st.session_state.idx = max(0, st.session_state.idx - 1)
 
-# layout: card area and controls
-col11, col22, col33 = st.columns([1, 6, 1])
-with col11:
-    st.button("← Prev", on_click=prev_card)
-with col33:
-    st.button("Next →", on_click=next_card)
+# def next_card():
+#     if st.session_state.idx == len(facts)-1:
+#         st.session_state.idx = 0
+#     else:
+#         st.session_state.idx = min(len(facts) - 1, st.session_state.idx + 1)
 
-card = facts[st.session_state.idx]
-with col22:
-    with st.container(border=True):
-        st.markdown(f"### {card['title']}")
-        st.write(card["text"])
-        st.caption(f"{st.session_state.idx + 1} / {len(facts)}")
+# # layout: card area and controls
+# col11, col22, col33 = st.columns([1, 6, 1])
+# with col11:
+#     st.button("← Prev", on_click=prev_card)
+# with col33:
+#     st.button("Next →", on_click=next_card)
+
+# card = facts[st.session_state.idx]
+# with col22:
+#     with st.container(border=True):
+#         st.markdown(f"### {card['title']}")
+#         st.write(card["text"])
+#         st.caption(f"{st.session_state.idx + 1} / {len(facts)}")
+
+########################################
+
+st.subheader("How does this experience work ?")
+
+"""
+1. Read the texte at the beginning of the "Create your system" section.
+2. Click on the different informations you want to include in your system and see how the flagged profiles change. Try different combinations and feel free to read the explanation pop-ups that appear.
+3. Try to answer the questions under the "Profiles" section. The answers are available by clicking on the question.
+4. (Optional) Check out the resources page to learn more about discimination through algorithms and data.
+5. Try the other display by clicking on the link below.
+6. Answer the quick survey at the bottom of the page, it would greatly help us.
+
+We hope you'll learn interesting facts about risk assessment systems !
+"""
 
 st.divider()
 
@@ -129,7 +183,7 @@ with col1:
 
     use_gender = st.toggle("Gender", key="use_gender")
     if use_gender:
-        st.info("According to the [Swiss Federal Institute of Statistics](https://www.bfs.admin.ch/bfs/fr/home/statistiques/criminalite-droit-penal/recidive/analyses.html), men tend to have a higher recidivism rate than women. We don't have any data about other genders")
+        st.info("According to the [Swiss Federal Institute of Statistics](https://www.bfs.admin.ch/bfs/fr/home/statistiques/criminalite-droit-penal/recidive/analyses.html), men tend to have a higher recidivism rate than women. We don't have any data about other genders.")
     use_ethnicity = st.toggle("Ethnicity", key="use_ethnicity")
     if use_ethnicity:
         st.info("According to [this analysis](https://www.bfs.admin.ch/bfs/fr/home/statistiques/criminalite-droit-penal/recidive/analyses.html) by the Swiss Federal Institute of Statistics, non-Swiss people tend to recidivate more.")
@@ -215,3 +269,58 @@ with col2:
     st.info(f"Number of low risk profiles : {nbr_low}")
     st.warning(f"Number of medium risk profiles : {nbr_medium}")
     st.error(f"Number of high risk profiles : {nbr_high}")
+
+
+st.divider()
+
+st.subheader("Questions")
+
+expander_score = st.expander("What is a recidivism score?")
+expander_score.write("""
+The score shown in the profiles mimics the categorization produced by [FaST](https://www.rosnet.ch/fr-ch/Processus/Tri), a tool used by [most German speaking cantons](https://algorithmwatch.ch/en/atlas-db/ros-fall-screening-tool-fast/?text=FaST). It represents three categories, from low chances of recidivism (in blue) to high chances (in red).""")
+
+expander_box = st.expander("How does the system work?")
+expander_box.write("""
+This app mirors the \"black-box\" aspect that these automated rating systems tend to have. The users (and the inmates being put to evaluations) don't necessarily understand what's going on in the rating process. This problem is notably visible in the FORTES algorithm used by many Swiss Cantons, as shown by [AlgorithmWatch](https://algorithmwatch.ch/de/fotres-automatisierte-strafjustiz/) and Tim Räz in [it's study of FORTES](https://link.springer.com/article/10.1007/s43681-022-00223-y).""")
+
+expander_weight = st.expander("Do all the variables have the same impact on the score?")
+expander_weight.write("""
+All informations don't play the same role in recidivism score calculations. As you can see in the following example, certain variables (e.g. \"Age\") tend to play a greater role than others in the recidivism score. This comes from the architecture of the algorithm used in the evaluation and is thus induced during the construction and programming of the system.""")
+
+expander_missing = st.expander("Could the system be more fair if we removed sensible informations (e.g. gender or ethnicity)?")
+expander_missing.write("""
+Missing informations about people doesn't necessarily mean less discrimination. For instance, even though ethnicity or race aren't taken into account when scoring people for recidivism in Swiss systems (such ash [FaST](https://www.rosnet.ch/fr-ch/Processus/Tri) and [FORTES](https://www.mwv-berlin.de/produkte/!/title/fotres--forensisches-operationalisiertes-therapie-risiko-evaluations-system/id/804)), discrimination can still be present through data and practices. Racial profiling is a great example of hidden discrimination hidden in arrest numbers or encounter with the police for a single individual. One could also use ZIP codes to try and infer the ethnicity or origin of a person, using statistics about demographics from certain regions.""")
+
+expander_box = st.expander("What is the situation in Switzerland?")
+expander_box.write("""
+There is no federal consensus on how to evaluate recidivism risks in Switzerland. The two main systems used are FaST and FOTRES, even though [latin cantons do not use them yet](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine). In [an article from 2018](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine), the SRF points out that these systems lack external evaluation and validation to assess their quality. The latin cantons use a system called [PLESORR](https://www.cldjp.ch/plesorr/).""")
+
+# expander_box = st.expander("Are numbers clear?")
+# expander_box.write("""
+# This app mirors the \"black-box\" aspect that these automated rating systems tend to have. The users (and the inmates being put to evaluations) don't necessarily understand what's going on in the rating process. This problem is notably visible in the FORTES algorithm used by many Swiss Cantons, as shown by [AlgorithmWatch](https://algorithmwatch.ch/de/fotres-automatisierte-strafjustiz/) and Tim Räz in [it's study of FORTES](https://link.springer.com/article/10.1007/s43681-022-00223-y).""")
+
+
+st.divider()
+
+st.subheader("Survey")
+
+# Streamlit form for input
+with st.form(key='app_form'):
+    # Form fields (similar to your previous code)
+    like = st.text_input("What did you like about this experience ?")
+    dislike = st.text_input("What could have been different / better ?")
+    offensive = st.checkbox("Did you find the experience with the pictures offensive (check the box if YES)?")
+
+    submit_button = st.form_submit_button("Submit")
+
+    if submit_button:
+        if like or dislike or offensive :
+            # Authenticate and update the Google Sheet
+            client = authenticate_google_sheets()
+            form_data = [
+                like,dislike, offensive
+            ]
+            update_google_sheet(form_data)
+            st.success("Review successfully submitted, thank you!")
+        else:
+            st.error("Please fill in all required fields.")
