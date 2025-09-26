@@ -70,7 +70,7 @@ def max_possible_score_for_row(row, use_encounters, use_convictions, use_age, us
 st.title("Discrimination through data and algorithm")
 container = st.container(border=True)
 container.write(
-    """Welcome to this interactive experience around algorithmic discrimination, where you can try and create your own risk assessment system to see how algorithms can be biased! This experience is based on various studies around risk assessment systems in the world and gathers identified biases. We specifically base this app around recidivism evaluation, to try and show the different form of discrimination that could take place in such practices."""
+    """Welcome to this interactive experience around algorithmic discrimination, where you can try and create your own risk assessment system to see how algorithms can be biased! This experience is based on various studies around risk assessment systems in the world and gathers identified biases. We specifically base this app around recidivism evaluation, to try and show the different forms of discrimination that could take place in such practices."""
 )
 
 st.divider()
@@ -119,10 +119,10 @@ st.divider()
 
 st.subheader("Create your system")
 
-col1, col2 = st.columns(2)
-
 with st.container(border=True):
     "You willl here create your own risk assessment system. You can select the informations you want to use in your system (you can select multiple at once), and you'll see the ratings of the different profiles change accordingly."
+
+col1, col2 = st.columns(2)
 
 with col1:
     st.write("Select what information you want to use in your system:")
@@ -190,7 +190,7 @@ for i, col in enumerate(cards):
         c1, c2 = st.columns(2)
         c1.write("**Profile**")
         # Replace with a real image path if you have one
-        c1.image("pic.jpg")
+        c1.image("user.png")
         c2.write(f"**Name**: {df_display['name'][i]}")
         c2.write(f"**Age**: {df_display['age'][i]}")
         c2.write(f"**Gender**: {df_display['gender'][i]}")
@@ -212,6 +212,6 @@ for i, col in enumerate(cards):
 
 with col2:
 
-    st.write(f"Number of low risk profiles : {nbr_low}")
-    st.write(f"Number of medium risk profiles : {nbr_medium}")
-    st.write(f"Number of high risk profiles : {nbr_high}")
+    st.info(f"Number of low risk profiles : {nbr_low}")
+    st.warning(f"Number of medium risk profiles : {nbr_medium}")
+    st.error(f"Number of high risk profiles : {nbr_high}")

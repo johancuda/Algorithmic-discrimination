@@ -1,6 +1,6 @@
 import streamlit as st
 
-def about():
+def resources():
     st.title("Resources")
 
     st.subheader("About automatic systems in Switzerland")
@@ -37,5 +37,5 @@ def about():
 
 st.logo("BFH_Logo_C_en_100_RGB.png", size="large")
 
-pg = st.navigation([st.Page("app.py", title="Home", default=True), st.Page(about, title="Resources"), st.Page("app_2.py", title="test")])
+pg = st.navigation([st.Page("app.py", title="Home", default=True), st.Page(resources, title="Resources"), st.Page("app_2.py", title="Second layout test"), st.Page("about.py", title="About")])
 pg.run()

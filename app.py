@@ -70,7 +70,7 @@ def max_possible_score_for_row(row, use_encounters, use_convictions, use_age, us
 st.title("Discrimination through data and algorithm")
 container = st.container(border=True)
 container.write(
-    """Welcome to this interactive experience around algorithmic discrimination, where you can try and create your own risk assessment system to see how algorithms can be biased! This experience is based on various studies around risk assessment systems in the world and gathers identified biases. We specifically base this app around recidivism evaluation, to try and show the different form of discrimination that could take place in such practices."""
+    """Welcome to this interactive experience around algorithmic discrimination, where you can try and create your own risk assessment system to see how algorithms can be biased! This experience is based on various studies around risk assessment systems in the world and gathers identified biases. We specifically base this app around recidivism evaluation, to try and show the different forms of discrimination that could take place in such practices."""
 )
 
 st.divider()
