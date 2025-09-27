@@ -159,9 +159,9 @@ st.divider()
 st.subheader("How does this experience work ?")
 
 """
-1. Read the texte at the beginning of the "Create your system" section.
+1. Read the text at the beginning of the "Create your system" section.
 2. Click on the different informations you want to include in your system and see how the flagged profiles change. Try different combinations and feel free to read the explanation pop-ups that appear.
-3. Try to answer the questions under the "Profiles" section. The answers are available by clicking on the question.
+3. Try to answer the questions underneath the "Profiles" section. The answers are available by clicking on the questions.
 4. (Optional) Check out the resources page to learn more about discimination through algorithms and data.
 5. Try the other display by clicking on the link below.
 6. Answer the quick survey at the bottom of the page, it would greatly help us.
