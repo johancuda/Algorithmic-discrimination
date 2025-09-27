@@ -37,5 +37,5 @@ def resources():
 
 st.logo("BFH_Logo_C_en_100_RGB.png", size="large")
 
-pg = st.navigation([st.Page("app.py", title="Home", default=True), st.Page(resources, title="Resources"), st.Page("app_2.py", title="Second layout test"), st.Page("about.py", title="About")])
+pg = st.navigation([st.Page("app_user.py", title="Home", default=True), st.Page("app_pics.py", title="Second experience"), st.Page(resources, title="Resources"), st.Page("about.py", title="About")])
 pg.run()
