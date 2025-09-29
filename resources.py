@@ -35,7 +35,18 @@ def resources():
     - [Manual – Fall-Screening-Tool](https://www.srf.ch/static/srf-data/data/2018/ros/fast_manual_und_gewichte.pdf)
     """
 
-st.logo("BFH_Logo_C_en_100_RGB.png", size="large")
+st.logo("assets/img/BFH_Logo_C_en_100_RGB.png", size="large")
 
-pg = st.navigation([st.Page("app_user.py", title="Home", default=True), st.Page("app_pics.py", title="Second experience"), st.Page(resources, title="Resources"), st.Page("about.py", title="About")])
+
+with st.sidebar:
+    # st.image("assets/img/qr_code.png", caption="Scan this to test this experience at home or on your device")
+    language = st.selectbox("Select a language", ("English", "French", "German"))
+    # if language == "English":
+    #     main_page = st
+print(language)
+test = f"app_{language}.py"
+pg = st.navigation([st.Page(test, title="Home", default=True),
+                    # st.Page("app_pics.py", title="Second experience"),
+                    st.Page(resources, title="Resources"),
+                    st.Page("about.py", title="About")])
 pg.run()

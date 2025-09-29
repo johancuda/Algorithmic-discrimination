@@ -163,14 +163,13 @@ st.subheader("How does this experience work ?")
 2. Click on the different informations you want to include in your system and see how the flagged profiles change. Try different combinations and feel free to read the explanation pop-ups that appear.
 3. Try to answer the questions underneath the "Profiles" section. The answers are available by clicking on the questions.
 4. (Optional) Check out the resources page to learn more about discimination through algorithms and data.
-5. Try the other display by clicking on the link below.
-6. Answer the quick survey at the bottom of the page, it would greatly help us.
+5. Answer the quick survey at the bottom of the page, it would greatly help us.
 
 We hope you'll learn interesting facts about risk assessment systems !
 """
 
-st.page_link("app_user.py", label="Test the first display !", icon="1️⃣")
-st.page_link("app_pics.py", label="Test the other display !", icon="2️⃣")
+# st.page_link("app_user.py", label="Test the first display !", icon="1️⃣")
+# st.page_link("app_pics.py", label="Test the other display !", icon="2️⃣")
 
 st.divider()
 
@@ -247,7 +246,7 @@ for i, col in enumerate(cards):
         c1, c2 = st.columns(2)
         c1.write("**Profile**")
         # Replace with a real image path if you have one
-        c1.image(f"user.png")
+        c1.image(f"assets/img/user.png")
         c2.write(f"**Name**: {df_display['name'][i]}")
         c2.write(f"**Age**: {df_display['age'][i]}")
         c2.write(f"**Gender**: {df_display['gender'][i]}")

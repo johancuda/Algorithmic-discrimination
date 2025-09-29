@@ -247,7 +247,7 @@ for i, col in enumerate(cards):
         c1, c2 = st.columns(2)
         c1.write("**Profile**")
         # Replace with a real image path if you have one
-        c1.image(f"{i}.jpg")
+        c1.image(f"assets/img/{i}.jpg")
         c2.write(f"**Name**: {df_display['name'][i]}")
         c2.write(f"**Age**: {df_display['age'][i]}")
         c2.write(f"**Gender**: {df_display['gender'][i]}")
