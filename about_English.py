@@ -3,7 +3,7 @@ import streamlit as st
 st.title("About this interactive experience")
 
 """
-This experience was created at the Bern Fachochschule.
+This experience was created at the [Bern University of Applied Sciences](bfh.ch/ti/en/?_gl=1*42r4ta*_up*MQ..*_gs*MQ..&gclid=Cj0KCQjw3OjGBhDYARIsADd-uX4v0-uODNVHriQzdWGZ-IqJIa6ZBCBHLppItwsG92qneDn-dGe1tgkaAqhZEALw_wcB&gclsrc=aw.ds&gbraid=0AAAAACeu3Fr_Jhv-mpzaC8FyXC-t3b8NX).
 
 If you have any suggestions or questions, please feel free to contact Johan Cuda ([johan.cuda@bfh.ch](mailto:johan.cuda@bfh.ch)).
 """
