@@ -295,7 +295,7 @@ Missing informations about people doesn't necessarily mean less discrimination. 
 
 expander_box = st.expander("What is the situation in Switzerland?")
 expander_box.write("""
-There is no federal consensus on how to evaluate recidivism risks in Switzerland. The two main systems used are FaST and FOTRES, even though [latin cantons do not use them yet](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine). In [an article from 2018](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine), the SRF points out that these systems lack external evaluation and validation to assess their quality. The latin cantons use a system called [PLESORR](https://www.cldjp.ch/plesorr/).""")
+There is no federal consensus on how to evaluate recidivism risks in Switzerland. The two main systems used are FaST and FOTRES, even though [latin cantons do not use them yet](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine). In [an article from 2018](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine), the SRF points out that these systems lack external evaluation and validation to assess their quality. The latin cantons use a system called [PLESORR](https://www.cldjp.ch/plesorr/). If you want a more general view of automated systems in Switzerland, read [this report](https://automatingsociety.algorithmwatch.org/wp-content/uploads/2021/01/Automating-Society-Report-2020-CH-Edition-DE-FR-IT-EN.pdf).""")
 
 # expander_box = st.expander("Are numbers clear?")
 # expander_box.write("""

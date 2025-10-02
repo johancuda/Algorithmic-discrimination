@@ -5,11 +5,11 @@ st.logo("assets/img/BFH_Logo_C_en_100_RGB.png", size="large")
 
 with st.sidebar:
     # st.image("assets/img/qr_code.png", caption="Scan this to test this experience at home or on your device")
-    language = st.selectbox("Select a language", ("English", "French", "German", "Italian"))
+    language = st.selectbox("Select a language", ("English", "French", "Italian", "German"))
 
-main_page = f"app_{language}.py"
-about_page = f"about_{language}.py"
-resources_page = f"resources_{language}.py"
+main_page = f"pages/app_page/app_{language}.py"
+about_page = f"pages/about_page/about_{language}.py"
+resources_page = f"pages/resources_page/resources_{language}.py"
 
 lang_dict = {
     "English": {

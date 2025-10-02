@@ -238,7 +238,7 @@ expander_box.write("""
 Es gibt keinen eidgenössischen Konsens darüber, wie Rückfallrisiken bewertet werden sollen. 
 Die beiden Hauptsysteme sind FaST und FOTRES, während [lateinische Kantone sie noch nicht nutzen](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine). 
 [Ein Artikel von 2018](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine) der SRF weist darauf hin, dass diesen Systemen externe Evaluationen und Qualitätsprüfungen fehlen. 
-In den lateinischen Kantonen wird ein System namens [PLESORR](https://www.cldjp.ch/plesorr/) verwendet.""")
+In den lateinischen Kantonen wird ein System namens [PLESORR](https://www.cldjp.ch/plesorr/) verwendet. Wenn Sie einen allgemeineren Überblick über automatisierte Systeme in der Schweiz wünschen, lesen Sie [diesen Bericht](https://automatingsociety.algorithmwatch.org/wp-content/uploads/2021/01/Automating-Society-Report-2020-CH-Edition-DE-FR-IT-EN.pdf).""")
 
 st.divider()
 

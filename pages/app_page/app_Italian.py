@@ -258,7 +258,7 @@ expander_box.write("""
 Non esiste un consenso federale su come valutare il rischio di recidiva in Svizzera. 
 I due principali sistemi usati sono FaST e FOTRES, sebbene [i cantoni latini non li usino ancora](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine). 
 In [un articolo del 2018](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine), la SRF sottolinea che questi sistemi mancano di valutazioni esterne e validazioni per giudicare la loro qualità. 
-I cantoni latini usano un sistema chiamato [PLESORR](https://www.cldjp.ch/plesorr/).""")
+I cantoni latini usano un sistema chiamato [PLESORR](https://www.cldjp.ch/plesorr/). Se desidera una visione più generale dei sistemi automatizzati in Svizzera, legga [questo rapporto](https://automatingsociety.algorithmwatch.org/wp-content/uploads/2021/01/Automating-Society-Report-2020-CH-Edition-DE-FR-IT-EN.pdf).""")
 
 st.divider()
 

@@ -11,11 +11,11 @@ This experience contains general informations about risk assessment systems in S
 ## Features
 - Create your own risk assessment system
 - Various facts about risk assessment systems
-- Available in English, French and German
+- Available in English, French, Italian and German
 
 ## How to use
 
-You can try this experience by following [this link](https://johancuda-algorithmic-discrimination.streamlit.app/).
+You can try this experience by following [this link](https://algorithmic-discrimination.streamlit.app/).
 
 ## Development
 
