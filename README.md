@@ -9,6 +9,7 @@ This app was created to showcase of discimination can manifest itsself in algori
 This experience contains general informations about risk assessment systems in Switzerland and in the US. Please answer the quick survey at the end of the main page to give us your thoughts!
 
 ## Features
+
 - Create your own risk assessment system
 - Various facts about risk assessment systems
 - Available in English, French, Italian and German
@@ -26,4 +27,3 @@ This app was created using [Streamlit](https://streamlit.io/) and uses [Google S
 This app was created at the School of Engineering and Computer Science at Bern University of Applied  Sciences.
 
 If you have any question please contact Johan Cuda ([johan.cuda@bfh.ch](mailto:johan.cuda@bfh.ch))
-

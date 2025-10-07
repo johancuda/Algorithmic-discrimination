@@ -3,7 +3,7 @@ import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-st.set_page_config(page_title="Discrimination through data and algorithm", layout="wide")
+st.set_page_config(page_title="Discrimination through Data and Algorithms", layout="wide")
 
 # Function to authenticate and connect to Google Sheets using Streamlit Secrets
 def authenticate_google_sheets():
@@ -50,8 +50,8 @@ df = pd.DataFrame({
     "gender": ["M", "F", "N/S", "N/S", "M", "F", "M", "N/S"],
 })
 
-# ---------- Scoring logic (same as yours, kept simple) ----------
-def calculate_recidive_score(*, nbr_encounter_police=None, nbr_prior_convictions=None, age=None, gender=None, ethnicity=None):
+# ---------- Scoring logic ----------
+def calculate_recidivism_score(*, nbr_encounter_police=None, nbr_prior_convictions=None, age=None, gender=None, ethnicity=None):
     score = 0
 
     # Encounters with police
@@ -71,8 +71,10 @@ def calculate_recidive_score(*, nbr_encounter_police=None, nbr_prior_convictions
             score += 1
         elif nbr_prior_convictions >= 5:
             score += 2
+
     if gender is not None and gender == "M":
-        score +=1
+        score += 1
+
     if ethnicity is not None and ethnicity == "Other":
         if score == 0:
             score = 1
@@ -104,109 +106,61 @@ def max_possible_score_for_row(row, use_encounters, use_convictions, use_age, us
 
 # ---------- UI ----------
 
-st.title("Discrimination through data and algorithm")
+st.title("Discrimination through Data and Algorithms")
 container = st.container(border=True)
 container.write(
-    """Welcome to this interactive experience around algorithmic discrimination, where you can try and create your own risk assessment system to see how algorithms can be biased! This experience is based on various studies around risk assessment systems in the world and gathers identified biases. We specifically base this app around automatic recidivism evaluation, to try and show the different forms of discrimination that could take place in such practices."""
+    """Welcome to this interactive experience about algorithmic discrimination. Here, you can design your own risk assessment system to explore how algorithms can reproduce or amplify bias. This experience is based on various studies on global risk assessment systems and illustrates common biases identified in such tools. It focuses on automated recidivism evaluation to highlight the different forms of discrimination that may occur in these practices."""
 )
 
 st.divider()
 
-########################################
-
-# st.subheader("General informations")
-
-# # sample cards data
-# facts = [
-#     {"title": "Recidivism score", "text": "The score shown in the profiles underneath mimics the categorization produced by [FaST](https://www.rosnet.ch/fr-ch/Processus/Tri), a tool used by [most German speaking cantons](https://algorithmwatch.ch/en/atlas-db/ros-fall-screening-tool-fast/?text=FaST). It represents three categories, from low chances of recidivism (in blue) to high chances (in red)."},
-#     {"title": "The Black-box aspect", "text": "This app mirors the \"Black-box\" aspect that these automated rating systems tend to have. The users (and the inmates being put to evaluations) don't necessarily understand what's going on in the rating process. This problem is notably visible in the FORTES algorithm used by many Swiss Cantons, as shown by [AlgorithmWatch](https://algorithmwatch.ch/de/fotres-automatisierte-strafjustiz/) and Tim Räz in [it's study of FORTES](https://link.springer.com/article/10.1007/s43681-022-00223-y)."},
-#     {"title": "Information weight", "text": "All informations don't play the same role in recidivism score calculations. As you can see in the following example, certain variables (e.g. \"Age\") tend to play a greater role than others in the recidivism score. This comes from the architecture of the algorithm used in the evaluation and is thus induced during the construction and programming of the system."},
-#     {"title": "Lack of Information", "text": "Missing informations about people doesn't necessarily mean less discrimination. For instance, even though ethnicity or race aren't taken into account when scoring people for recidivism in Swiss systems (such ash [FaST](https://www.rosnet.ch/fr-ch/Processus/Tri) and [FORTES](https://www.mwv-berlin.de/produkte/!/title/fotres--forensisches-operationalisiertes-therapie-risiko-evaluations-system/id/804)), discrimination can still be present through data and practices. Racial profiling is a great example of hidden discrimination hidden in arrest numbers or encounter with the police for a single individual. One could also use ZIP codes to try and infer the ethnicity or origin of a person, using statistics about demographics from certain regions."},
-#     {"title": "The Swiss situation", "text": "There is no federal consensus on how to evaluate recidivism risks in Switzerland. The two main systems used are FaST and FOTRES, even though [latin cantons do not use them yet](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine). In [an article from 2018](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine), the SRF points out that these systems lack external evaluation and validation to assess their quality."},
-#     {"title": "Chances of recidivism", "text": "There is a misconception about what the chance of recidivism means. For example, when we say that someone has a 43 percent chance of recidivism, it doesn't mean that they will commit another crime 43 percent of the time. It means that from similar profiles, 43 percent of the people have commited another crime."}
-#     # Pas sûr de la définition ici!!
-# ]
-
-# # init index
-# if "idx" not in st.session_state:
-#     st.session_state.idx = 0
-
-# def prev_card():
-#     st.session_state.idx = max(0, st.session_state.idx - 1)
-
-# def next_card():
-#     if st.session_state.idx == len(facts)-1:
-#         st.session_state.idx = 0
-#     else:
-#         st.session_state.idx = min(len(facts) - 1, st.session_state.idx + 1)
-
-# # layout: card area and controls
-# col11, col22, col33 = st.columns([1, 6, 1])
-# with col11:
-#     st.button("← Prev", on_click=prev_card)
-# with col33:
-#     st.button("Next →", on_click=next_card)
-
-# card = facts[st.session_state.idx]
-# with col22:
-#     with st.container(border=True):
-#         st.markdown(f"### {card['title']}")
-#         st.write(card["text"])
-#         st.caption(f"{st.session_state.idx + 1} / {len(facts)}")
-
-########################################
-
-st.subheader("How does this experience work ?")
+st.subheader("How does this experience work?")
 
 """
-1. Read the text at the beginning of the "Create your system" section.
-2. Click on the different informations you want to include in your system and see how the flagged profiles change. Try different combinations and feel free to read the explanation pop-ups that appear.
-3. Try to answer the questions underneath the "Profiles" section. The answers are available by clicking on the questions.
-4. (Optional) Check out the resources page to learn more about discimination through algorithms and data.
-5. Answer the quick survey at the bottom of the page, it would greatly help us.
+1. Read the text at the beginning of the “Create your system” section.
+2. Click on the different types of information you want to include in your system and observe how the profiles’ scores change. Try different combinations and read the explanation pop-ups that appear.
+3. Try to answer the questions under the “Profiles” section. Answers can be revealed by clicking on each question.
+4. (Optional) Visit the resources page to learn more about discrimination through algorithms and data.
+5. Answer the quick survey at the bottom of the page — your feedback helps us improve.
 
-We hope you'll learn interesting facts about risk assessment systems !
+We hope you’ll gain valuable insights about risk assessment systems!
 """
-
-# st.page_link("app_user.py", label="Test the first display !", icon="1️⃣")
-# st.page_link("app_pics.py", label="Test the other display !", icon="2️⃣")
 
 st.divider()
 
 st.subheader("Create your system")
 
 with st.container(border=True):
-    "You willl here create your own risk assessment system. You can select the informations you want to use in your system (you can select multiple at once), and you'll see the ratings of the different profiles change accordingly."
+    "Here, you can create your own risk assessment system. Select the information you want to use (you can choose several options), and observe how the risk ratings of the profiles change accordingly."
 
 col1, col2 = st.columns(2)
 
 with col1:
-    st.write("Select what information you want to use in your system:")
+    st.write("Select which information you want to include in your system:")
 
     use_gender = st.toggle("Gender", key="use_gender")
     if use_gender:
-        st.info("According to the [Swiss Federal Institute of Statistics](https://www.bfs.admin.ch/bfs/fr/home/statistiques/criminalite-droit-penal/recidive/analyses.html), men tend to have a higher recidivism rate than women. We don't have any data about other genders.")
+        st.info("According to the [Swiss Federal Statistical Office](https://www.bfs.admin.ch/bfs/fr/home/statistiques/criminalite-droit-penal/recidive/analyses.html), men tend to have a higher recidivism rate than women. No data is currently available for other genders.")
+
     use_ethnicity = st.toggle("Ethnicity", key="use_ethnicity")
     if use_ethnicity:
-        st.info("According to [this analysis](https://www.bfs.admin.ch/bfs/fr/home/statistiques/criminalite-droit-penal/recidive/analyses.html) by the Swiss Federal Institute of Statistics, non-Swiss people tend to recidivate more.")
-    use_encounters = st.toggle("Number of encounters with the police", key="use_encounters")
+        st.info("According to [this analysis](https://www.bfs.admin.ch/bfs/fr/home/statistiques/criminalite-droit-penal/recidive/analyses.html) by the Swiss Federal Statistical Office, non-Swiss individuals tend to reoffend more often.")
 
+    use_encounters = st.toggle("Number of encounters with the police", key="use_encounters")
     if use_encounters:
-        st.info("Because police controls can be executed on discriminatory grounds, numbers of encounters with the police can cause discrimination through data. Encounters with the police are defined as any interaction with the police, from roadside checks to police interventions.")
+        st.info("Since police checks can be performed on discriminatory grounds, the number of encounters with the police can reflect bias in data. ‘Encounters’ include any interaction with the police, from roadside checks to interventions.")
 
     use_convictions = st.toggle("Number of previous convictions", key="use_convictions")
     if use_convictions:
-        st.info("Convictions rate can be influenced by discriminatory decisions, thus influencing the recidivism score.")
+        st.info("Conviction rates may be influenced by systemic biases, thus affecting the recidivism score.")
+
     use_age = st.toggle("Age", key="use_age")
-
     if use_age:
-        st.info("According to [this study of the US system **COMPAS**](https://www.propublica.org/article/how-we-analyzed-the-compas-recidivism-algorithm), younger people tend to be categorized as riskier profiles for recidivism.")
+        st.info("According to [this study on the US COMPAS system](https://www.propublica.org/article/how-we-analyzed-the-compas-recidivism-algorithm), younger individuals are often categorized as higher-risk profiles for recidivism.")
 
-
-        
 st.subheader("Profiles")
 
-# ---------- Compute scores dynamically on every rerun ----------
+# ---------- Compute scores dynamically ----------
 scores = []
 percents = []
 for _, row in df.iterrows():
@@ -222,56 +176,49 @@ for _, row in df.iterrows():
     if use_age:
         kwargs["age"] = row["age"]
 
-    score = calculate_recidive_score(**kwargs)
+    score = calculate_recidivism_score(**kwargs)
     scores.append(score)
 
-    # Convert to percent relative to this profile's max possible given current toggles
     max_score = max_possible_score_for_row(row, use_encounters, use_convictions, use_age, use_ethnicity, use_gender)
     percent = 0.0 if max_score == 0 else (score / max_score) * 100.0
     percents.append(round(percent, 1))
 
 df_display = df.copy()
-df_display["recidive_score_percent"] = percents
+df_display["recidivism_score_percent"] = percents
 
 # ---------- Show cards ----------
 row1 = st.columns(4)
 row2 = st.columns(4)
 cards = row1 + row2
-nbr_low = 0
-nbr_medium = 0
-nbr_high = 0
+nbr_low, nbr_medium, nbr_high = 0, 0, 0
 
 for i, col in enumerate(cards):
     with col.container(border=True):
         c1, c2 = st.columns(2)
         c1.write("**Profile**")
-        # Replace with a real image path if you have one
-        c1.image(f"assets/img/user.png")
-        c2.write(f"**Name**: {df_display['name'][i]}")
-        c2.write(f"**Age**: {df_display['age'][i]}")
-        c2.write(f"**Gender**: {df_display['gender'][i]}")
-        c2.write(f"**Ethnicity**: {df_display['ethnicity'][i]}")
-        c2.write(f"**Number of convictions**: {df_display['convictions'][i]}")
-        c2.write(f"**Number of encounters with the police**: {df_display['encounters'][i]}")
+        c1.image("assets/img/user.png")
+        c2.write(f"**Name:** {df_display['name'][i]}")
+        c2.write(f"**Age:** {df_display['age'][i]}")
+        c2.write(f"**Gender:** {df_display['gender'][i]}")
+        c2.write(f"**Ethnicity:** {df_display['ethnicity'][i]}")
+        c2.write(f"**Number of convictions:** {df_display['convictions'][i]}")
+        c2.write(f"**Number of police encounters:** {df_display['encounters'][i]}")
 
-        pct = df_display["recidive_score_percent"][i]
+        pct = df_display["recidivism_score_percent"][i]
         if pct < 33:
-            st.info(f"Recidive score: {pct}%")
+            st.info(f"Recidivism score: {pct}%")
             nbr_low += 1
         elif 33 <= pct < 66:
             nbr_medium += 1
-            st.warning(f"Recidive score: {pct}%")
+            st.warning(f"Recidivism score: {pct}%")
         else:
             nbr_high += 1
-            st.error(f"Recidive score: {pct}%")
-
+            st.error(f"Recidivism score: {pct}%")
 
 with col2:
-
-    st.info(f"Number of low risk profiles : {nbr_low}")
-    st.warning(f"Number of medium risk profiles : {nbr_medium}")
-    st.error(f"Number of high risk profiles : {nbr_high}")
-
+    st.info(f"Number of low-risk profiles: {nbr_low}")
+    st.warning(f"Number of medium-risk profiles: {nbr_medium}")
+    st.error(f"Number of high-risk profiles: {nbr_high}")
 
 st.divider()
 
@@ -279,50 +226,45 @@ st.subheader("Questions")
 
 expander_score = st.expander("What is a recidivism score?")
 expander_score.write("""
-The score shown in the profiles mimics the categorization produced by [FaST](https://www.rosnet.ch/fr-ch/Processus/Tri), a tool used by [most German speaking cantons](https://algorithmwatch.ch/en/atlas-db/ros-fall-screening-tool-fast/?text=FaST). It represents three categories, from low chances of recidivism (in blue) to high chances (in red).""")
+The score shown in the profiles mimics the categorization produced by [FaST](https://www.rosnet.ch/fr-ch/Processus/Tri), a tool used by [most German-speaking cantons](https://algorithmwatch.ch/en/atlas-db/ros-fall-screening-tool-fast/?text=FaST). It represents three categories, from low chances of recidivism (in blue) to high chances (in red).
+""")
 
 expander_box = st.expander("How does the system work?")
 expander_box.write("""
-This app mirors the \"black-box\" aspect that these automated rating systems tend to have. The users (and the inmates being put to evaluations) don't necessarily understand what's going on in the rating process. This problem is notably visible in the FORTES algorithm used by many Swiss Cantons, as shown by [AlgorithmWatch](https://algorithmwatch.ch/de/fotres-automatisierte-strafjustiz/) and Tim Räz in [it's study of FORTES](https://link.springer.com/article/10.1007/s43681-022-00223-y).""")
+This app mirrors the “black-box” nature of automated rating systems. Users (and the individuals being evaluated) often don’t understand what happens during the scoring process. This opacity is notably present in the FOTRES algorithm used by several Swiss cantons, as shown by [AlgorithmWatch](https://algorithmwatch.ch/de/fotres-automatisierte-strafjustiz/) and Tim Räz in [his study on FOTRES](https://link.springer.com/article/10.1007/s43681-022-00223-y).
+""")
 
-expander_weight = st.expander("Do all the variables have the same impact on the score?")
+expander_weight = st.expander("Do all variables have the same impact on the score?")
 expander_weight.write("""
-All informations don't play the same role in recidivism score calculations. As you can see in the following example, certain variables (e.g. \"Age\") tend to play a greater role than others in the recidivism score. This comes from the architecture of the algorithm used in the evaluation and is thus induced during the construction and programming of the system.""")
+Not all pieces of information contribute equally to recidivism score calculations. Some variables (e.g., “Age”) tend to have a greater influence. This stems from the algorithm’s design and the choices made during its construction and programming.
+""")
 
-expander_missing = st.expander("Could the system be more fair if we removed sensible informations (e.g. gender or ethnicity)?")
+expander_missing = st.expander("Would removing sensitive information (e.g., gender or ethnicity) make the system fairer?")
 expander_missing.write("""
-Missing informations about people doesn't necessarily mean less discrimination. For instance, even though ethnicity or race aren't taken into account when scoring people for recidivism in Swiss systems (such ash [FaST](https://www.rosnet.ch/fr-ch/Processus/Tri) and [FORTES](https://www.mwv-berlin.de/produkte/!/title/fotres--forensisches-operationalisiertes-therapie-risiko-evaluations-system/id/804)), discrimination can still be present through data and practices. Racial profiling is a great example of hidden discrimination hidden in arrest numbers or encounter with the police for a single individual. One could also use ZIP codes to try and infer the ethnicity or origin of a person, using statistics about demographics from certain regions.""")
+Removing sensitive data does not necessarily reduce discrimination. For instance, even though ethnicity or race are not explicitly included in Swiss recidivism scoring systems such as [FaST](https://www.rosnet.ch/fr-ch/Processus/Tri) and [FOTRES](https://www.mwv-berlin.de/produkte/!/title/fotres--forensisches-operationalisiertes-therapie-risiko-evaluations-system/id/804), bias can still emerge through correlated data or practices. Racial profiling, for example, can introduce hidden discrimination via arrest rates or police encounters. Similarly, ZIP codes can indirectly reveal a person’s origin or ethnicity based on demographic data.
+""")
 
 expander_box = st.expander("What is the situation in Switzerland?")
 expander_box.write("""
-There is no federal consensus on how to evaluate recidivism risks in Switzerland. The two main systems used are FaST and FOTRES, even though [latin cantons do not use them yet](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine). In [an article from 2018](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine), the SRF points out that these systems lack external evaluation and validation to assess their quality. The latin cantons use a system called [PLESORR](https://www.cldjp.ch/plesorr/). If you want a more general view of automated systems in Switzerland, read [this report](https://automatingsociety.algorithmwatch.org/wp-content/uploads/2021/01/Automating-Society-Report-2020-CH-Edition-DE-FR-IT-EN.pdf).""")
-
-# expander_box = st.expander("Are numbers clear?")
-# expander_box.write("""
-# This app mirors the \"black-box\" aspect that these automated rating systems tend to have. The users (and the inmates being put to evaluations) don't necessarily understand what's going on in the rating process. This problem is notably visible in the FORTES algorithm used by many Swiss Cantons, as shown by [AlgorithmWatch](https://algorithmwatch.ch/de/fotres-automatisierte-strafjustiz/) and Tim Räz in [it's study of FORTES](https://link.springer.com/article/10.1007/s43681-022-00223-y).""")
-
+There is no federal consensus on how to evaluate recidivism risks in Switzerland. The two main systems used are FaST and FOTRES, although [French-speaking cantons do not yet use them](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine). According to [a 2018 SRF article](https://www.srf.ch/news/schweiz/rueckfallrisiko-bei-straftaetern-die-grosse-screening-maschine), these systems lack external evaluation and validation. French-speaking cantons use a system called [PLESORR](https://www.cldjp.ch/plesorr/). For a broader overview of automated systems in Switzerland, consult [this report](https://automatingsociety.algorithmwatch.org/wp-content/uploads/2021/01/Automating-Society-Report-2020-CH-Edition-DE-FR-IT-EN.pdf).
+""")
 
 st.divider()
 
 st.subheader("Survey")
 
-# Streamlit form for input
 with st.form(key='app_form'):
-    # Form fields (similar to your previous code)
-    like = st.text_input("What did you like about this experience ?")
-    dislike = st.text_input("What could have been different / better ?")
-    offensive = st.checkbox("Did you find the experience with the pictures offensive (check the box if YES)?")
+    like = st.text_input("What did you like about this experience?")
+    dislike = st.text_input("What could have been improved?")
+    offensive = st.checkbox("Did you find any part of this experience offensive (check the box if YES)?")
 
     submit_button = st.form_submit_button("Submit")
 
     if submit_button:
-        if like or dislike or offensive :
-            # Authenticate and update the Google Sheet
+        if like or dislike or offensive:
             client = authenticate_google_sheets()
-            form_data = [
-                like,dislike, offensive
-            ]
+            form_data = [like, dislike, offensive]
             update_google_sheet(form_data)
-            st.success("Review successfully submitted, thank you!")
+            st.success("Review successfully submitted. Thank you for your feedback!")
         else:
-            st.error("Please fill in all required fields.")
+            st.error("Please fill in at least one field before submitting.")
