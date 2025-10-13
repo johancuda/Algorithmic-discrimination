@@ -109,7 +109,9 @@ def max_possible_score_for_row(row, use_encounters, use_convictions, use_age, us
 st.title("Discrimination through Data and Algorithms")
 container = st.container(border=True)
 container.write(
-    """Welcome to this interactive experience about algorithmic discrimination. Here, you can design your own risk assessment system to explore how algorithms can reproduce or amplify bias. This experience is based on various studies on global risk assessment systems and illustrates common biases identified in such tools. It focuses on automated recidivism evaluation to highlight the different forms of discrimination that may occur in these practices."""
+    """Welcome to this interactive experience about **algorithmic discrimination**. You will design your own **recidivism prediction tool** – a system used in various countries around the globe to predict wether someone could potentially commit another crime. This will allow you to explore how algorithms and data can reproduce or amplify bias. 
+    
+This experience is based on various studies on global risk assessment systems and illustrates common biases identified in such tools. It focuses on automated recidivism evaluation to highlight the different forms of discrimination that may occur in these practices."""
 )
 
 st.divider()
@@ -195,13 +197,13 @@ nbr_low, nbr_medium, nbr_high = 0, 0, 0
 for i, col in enumerate(cards):
     with col.container(border=True):
         c1, c2 = st.columns(2)
-        c1.write("**Profile**")
-        c1.image("assets/img/user.png")
-        c2.write(f"**Name:** {df_display['name'][i]}")
+        #c1.write("**Profile**")
+        #c1.image("assets/img/user.png")
+        c1.write(f"**Name:** {df_display['name'][i]}")
         c2.write(f"**Age:** {df_display['age'][i]}")
-        c2.write(f"**Gender:** {df_display['gender'][i]}")
+        c1.write(f"**Gender:** {df_display['gender'][i]}")
         c2.write(f"**Ethnicity:** {df_display['ethnicity'][i]}")
-        c2.write(f"**Number of convictions:** {df_display['convictions'][i]}")
+        c1.write(f"**Number of convictions:** {df_display['convictions'][i]}")
         c2.write(f"**Number of police encounters:** {df_display['encounters'][i]}")
 
         pct = df_display["recidivism_score_percent"][i]

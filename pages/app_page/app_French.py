@@ -107,9 +107,10 @@ def max_possible_score_for_row(row, use_encounters, use_convictions, use_age, us
 st.title("Discrimination par les données et les algorithmes")
 container = st.container(border=True)
 container.write(
-    """Bienvenue dans cette expérience interactive autour de la discrimination algorithmique, où vous pouvez essayer de créer votre propre système d’évaluation du risque afin de voir comment les algorithmes peuvent être biaisés ! 
-Cette expérience s’inspire de différentes études sur les systèmes d’évaluation du risque dans le monde et rassemble les biais identifiés. 
-Nous basons spécifiquement cette application sur l’évaluation automatique du risque de récidive, pour montrer les différentes formes de discrimination possibles dans de telles pratiques."""
+    """Bienvenue dans cette expérience interactive sur la **discrimination algorithmique**. Vous allez concevoir votre propre **outil de prédiction de la récidive** – un système utilisé dans plusieurs pays à travers le monde pour estimer si une personne pourrait potentiellement commettre un nouveau crime. Cela vous permettra d’explorer comment les algorithmes et les données peuvent reproduire ou amplifier des biais.
+
+Cette expérience s’appuie sur diverses études portant sur les systèmes mondiaux d’évaluation du risque et illustre les biais couramment identifiés dans de tels outils. Elle se concentre sur l’évaluation automatisée de la récidive afin de mettre en lumière les différentes formes de discrimination pouvant survenir dans ces pratiques.
+"""
 )
 
 st.divider()
@@ -197,13 +198,13 @@ nbr_high = 0
 for i, col in enumerate(cards):
     with col.container(border=True):
         c1, c2 = st.columns(2)
-        c1.write("**Profil**")
-        c1.image(f"assets/img/user.png")
-        c2.write(f"**Nom**: {df_display['name'][i]}")
+        # c1.write("**Profil**")
+        # c1.image(f"assets/img/user.png")
+        c1.write(f"**Nom**: {df_display['name'][i]}")
         c2.write(f"**Âge**: {df_display['age'][i]}")
-        c2.write(f"**Genre**: {df_display['gender'][i]}")
+        c1.write(f"**Genre**: {df_display['gender'][i]}")
         c2.write(f"**Origine / nationalité**: {df_display['ethnicity'][i]}")
-        c2.write(f"**Nombre de condamnations**: {df_display['convictions'][i]}")
+        c1.write(f"**Nombre de condamnations**: {df_display['convictions'][i]}")
         c2.write(f"**Nombre de rencontres avec la police**: {df_display['encounters'][i]}")
 
         pct = df_display["recidive_score_percent"][i]
