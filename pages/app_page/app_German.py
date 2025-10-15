@@ -200,9 +200,46 @@ for i, col in enumerate(cards):
             st.error(f"Rückfall-Score: {pct}%")
 
 with col2:
-    st.info(f"Anzahl Profile mit geringem Risiko: {nbr_low}")
-    st.warning(f"Anzahl Profile mit mittlerem Risiko: {nbr_medium}")
-    st.error(f"Anzahl Profile mit hohem Risiko: {nbr_high}")
+    if "first_run" not in st.session_state:
+        st.session_state.first_run = pd.DataFrame({
+            "Niedrigrisikoprofile": [nbr_low], 
+            "Mittleres Risikoprofile": [nbr_medium],
+            "Hochrisikoprofile": [nbr_high]})
+    else:
+        if "second_run" not in st.session_state:
+            st.session_state.second_run = pd.DataFrame({
+            "Niedrigrisikoprofile": [nbr_low], 
+            "Mittleres Risikoprofile": [nbr_medium],
+            "Hochrisikoprofile": [nbr_high]})
+        else:
+            st.session_state.first_run = st.session_state.second_run
+            st.session_state.second_run = pd.DataFrame({
+            "Niedrigrisikoprofile": [nbr_low], 
+            "Mittleres Risikoprofile": [nbr_medium],
+            "Hochrisikoprofile": [nbr_high]})
+
+    if "second_run" not in st.session_state:
+
+        st.info(f"Anzahl der Niedrigrisikoprofile: {nbr_low}")
+        st.warning(f"Anzahl der mittleren Risikoprofile: {nbr_medium}")
+        st.error(f"Anzahl der Hochrisikoprofile: {nbr_high}")
+
+    if "second_run" in st.session_state:
+        # Kombiniere beide Durchläufe in einem DataFrame zur Visualisierung
+        combined_df = pd.concat(
+            [st.session_state.first_run, st.session_state.second_run],
+            ignore_index=True
+        )
+        # Ersetze NaN durch 0 zur Sicherheit
+        combined_df = combined_df.fillna(0)
+
+        # Beschriftungen für jeden Durchlauf hinzufügen
+        combined_df.index = ["Erster Durchlauf", "Zweiter Durchlauf"]
+        combined_df = combined_df[["Niedrigrisikoprofile", "Mittleres Risikoprofile", "Hochrisikoprofile"]]
+
+        st.write("Balkendiagramm der Klassifizierung:")
+        st.bar_chart(combined_df, stack=False)
+
 
 st.divider()
 

@@ -218,9 +218,46 @@ for i, col in enumerate(cards):
             st.error(f"Punteggio di recidiva: {pct}%")
 
 with col2:
-    st.info(f"Numero di profili a basso rischio: {nbr_low}")
-    st.warning(f"Numero di profili a rischio medio: {nbr_medium}")
-    st.error(f"Numero di profili ad alto rischio: {nbr_high}")
+    if "first_run" not in st.session_state:
+        st.session_state.first_run = pd.DataFrame({
+            "Profili a basso rischio": [nbr_low], 
+            "Profili a rischio medio": [nbr_medium],
+            "Profili ad alto rischio": [nbr_high]})
+    else:
+        if "second_run" not in st.session_state:
+            st.session_state.second_run = pd.DataFrame({
+            "Profili a basso rischio": [nbr_low], 
+            "Profili a rischio medio": [nbr_medium],
+            "Profili ad alto rischio": [nbr_high]})
+        else:
+            st.session_state.first_run = st.session_state.second_run
+            st.session_state.second_run = pd.DataFrame({
+            "Profili a basso rischio": [nbr_low], 
+            "Profili a rischio medio": [nbr_medium],
+            "Profili ad alto rischio": [nbr_high]})
+
+    if "second_run" not in st.session_state:
+
+        st.info(f"Numero di profili a basso rischio: {nbr_low}")
+        st.warning(f"Numero di profili a rischio medio: {nbr_medium}")
+        st.error(f"Numero di profili ad alto rischio: {nbr_high}")
+
+    if "second_run" in st.session_state:
+        # Combina entrambi i run in un unico DataFrame per la visualizzazione
+        combined_df = pd.concat(
+            [st.session_state.first_run, st.session_state.second_run],
+            ignore_index=True
+        )
+        # Sostituisci eventuali NaN con 0
+        combined_df = combined_df.fillna(0)
+
+        # Aggiungi etichette per ogni run
+        combined_df.index = ["Primo run", "Secondo run"]
+        combined_df = combined_df[["Profili a basso rischio", "Profili a rischio medio", "Profili ad alto rischio"]]
+
+        st.write("Grafico a barre della classificazione:")
+        st.bar_chart(combined_df, stack=False)
+
 
 st.divider()
 

@@ -218,9 +218,45 @@ for i, col in enumerate(cards):
             st.error(f"Recidivism score: {pct}%")
 
 with col2:
-    st.info(f"Number of low-risk profiles: {nbr_low}")
-    st.warning(f"Number of medium-risk profiles: {nbr_medium}")
-    st.error(f"Number of high-risk profiles: {nbr_high}")
+    if "first_run" not in st.session_state:
+        st.session_state.first_run = pd.DataFrame({
+            "Low-risk profiles": [nbr_low], 
+            "Medium-risk profiles": [nbr_medium],
+            "High-risk profiles": [nbr_high]})
+    else :
+        if "second_run" not in st.session_state:
+            st.session_state.second_run = pd.DataFrame({
+            "Low-risk profiles": [nbr_low], 
+            "Medium-risk profiles": [nbr_medium],
+            "High-risk profiles": [nbr_high]})
+        else:
+            st.session_state.first_run = st.session_state.second_run
+            st.session_state.second_run = pd.DataFrame({
+            "Low-risk profiles": [nbr_low], 
+            "Medium-risk profiles": [nbr_medium],
+            "High-risk profiles": [nbr_high]})
+
+    if "second_run" not in st.session_state:
+
+        st.info(f"Number of low-risk profiles: {nbr_low}")
+        st.warning(f"Number of medium-risk profiles: {nbr_medium}")
+        st.error(f"Number of high-risk profiles: {nbr_high}")
+    
+    if "second_run" in st.session_state:
+        # Combine both runs into one DataFrame for visualization
+        combined_df = pd.concat(
+            [st.session_state.first_run, st.session_state.second_run],
+            ignore_index=True
+        )
+        # Replace NaN with 0 just in case
+        combined_df = combined_df.fillna(0)
+
+        # Optional: add labels for each run
+        combined_df.index = ["Previous run", "Current run"]
+        combined_df = combined_df[["Low-risk profiles", "Medium-risk profiles", "High-risk profiles"]]
+
+        st.write("Barchart of the classification:")
+        st.bar_chart(combined_df, stack=False)
 
 st.divider()
 
