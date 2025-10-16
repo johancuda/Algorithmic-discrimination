@@ -306,3 +306,13 @@ with st.form(key='app_form'):
             st.success("Review successfully submitted. Thank you for your feedback!")
         else:
             st.error("Please fill in at least one field before submitting.")
+
+st.divider()
+
+st.subheader("Report an algorithmic discrimination")
+
+container_2 = st.container(border=True)
+
+container_2.write("If you think you've been a victim of an algorithmic discrimination, you can report it to [AlgorithmWatch](https://algorithmwatch.ch/) by clicking the button below.")
+
+container_2.link_button("Report an algorithmic discrimination", "https://algorithmwatch.ch/fr/signaler-une-discrimination-algorithmique/")

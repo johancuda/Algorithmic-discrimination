@@ -253,7 +253,7 @@ with col2:
         combined_df = combined_df.fillna(0)
 
         # Ajouter des étiquettes pour chaque exécution
-        combined_df.index = ["Première exécution", "Deuxième exécution"]
+        combined_df.index = ["Exécution précédente", "Exécution actuelle"]
         combined_df = combined_df[["Profils à faible risque", "Profils à risque moyen", "Profils à haut risque"]]
 
         st.write("Diagramme en barres de la classification :")
@@ -313,3 +313,14 @@ with st.form(key='app_form'):
             st.success("Avis envoyé avec succès, merci !")
         else:
             st.error("Veuillez remplir tous les champs obligatoires.")
+
+st.divider()
+
+st.subheader("Signaler une discrimination algorithmique")
+
+container_2 = st.container(border=True)
+
+container_2.write("Si vous pensez avoir été victime d’une discrimination algorithmique, vous pouvez la signaler à [AlgorithmWatch](https://algorithmwatch.ch/) en cliquant sur le bouton ci-dessous.")
+
+container_2.link_button("Signaler une discrimination algorithmique", "https://algorithmwatch.ch/fr/signaler-une-discrimination-algorithmique/")
+

@@ -313,3 +313,13 @@ with st.form(key='app_form'):
             st.success("Feedback inviato con successo, grazie!")
         else:
             st.error("Si prega di compilare tutti i campi obbligatori.")
+
+st.divider()
+
+st.subheader("Segnala una discriminazione algoritmica")
+
+container_2 = st.container(border=True)
+
+container_2.write("Se pensi di essere stato vittima di una discriminazione algoritmica, puoi segnalarlo a [AlgorithmWatch](https://algorithmwatch.ch/) cliccando sul pulsante qui sotto.")
+
+container_2.link_button("Segnala una discriminazione algoritmica", "https://algorithmwatch.ch/it/segnala-una-discriminazione-algoritmica/")

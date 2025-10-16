@@ -296,3 +296,13 @@ with st.form(key='app_form'):
             st.success("Feedback erfolgreich übermittelt, vielen Dank!")
         else:
             st.error("Bitte füllen Sie alle erforderlichen Felder aus.")
+
+st.divider()
+
+st.subheader("Algorithmische Diskriminierung melden")
+
+container_2 = st.container(border=True)
+
+container_2.write("Wenn Sie glauben, Opfer einer algorithmischen Diskriminierung geworden zu sein, können Sie dies bei [AlgorithmWatch](https://algorithmwatch.ch/) melden, indem Sie auf die Schaltfläche unten klicken.")
+
+container_2.link_button("Algorithmische Diskriminierung melden", "https://algorithmwatch.ch/de/melde-eine-algorithmische-diskriminierung/")
